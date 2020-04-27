@@ -10,7 +10,7 @@
                 <div class="col-md-12">
                     <div class="content_wrapper">
                         <div class="table_banner clearfix">
-                            <h5 class="table_banner_title">Category</h5>
+                            <h5 class="table_banner_title">Book Order</h5>
                         </div>
                         <div class="table_body text-left">
                             <table id="example" class="table table-condensed responsive table_custom" cellspacing="0" width="100%">
@@ -19,13 +19,10 @@
                                         <th>No</th>
                                         <th>Id Booking</th>
                                         <th>Costumer Name</th>
-                                        <th>Address</th>
                                         <th>Phone Number</th>
                                         <th>Email</th>
                                         <th>Service</th>
-                                        <th>File layout</th>
                                         <th>Status</th>
-                                        <th>Created On</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -42,16 +39,14 @@
                                         </td>
                                         <td><?=$value->id_booking?></td>
                                         <td><?=$value->customer_name?></td>
-                                        <td><?=$value->costumer_address?></td>
                                         <td><?=$value->phone_num?></td>
                                         <td><?=$value->customer_email?></td>
                                         <td><?=service($value->id_service)?></td>
-                                        <td><?=$value->layout_file_path?></td>
                                         <td><?=$value->status_booking?></td>
 
                                         <td class="action-buttons">
                                             <?php if($sesi['user_role'] == 'Admin'){ ?>
-                                            Action
+                                            <?=($value->status_booking == 'PENDING') ? '<a class="btn btn-success" href="'.base_url('root/uprove/'.$value->id_booking).'">Uprove</a>' : 'Uproved' ?> <br><br> <a class="btn btn-primary" href="<?=base_url('root/detail_order/'.$value->id_booking)?>">Detail</a>
                                             <?php }else{?>
                                             Access denied!
                                             <?php }?>

@@ -1248,8 +1248,42 @@ class Root extends CommonDash {
 			'titleWeb' => 'Book Order',
 			'titlePage' => 'Book Order Page'
 		);
-		$data['data'] = $this->Mod_crud->getData('result','*','tbl_bookings');
+		$data['data'] = $this->Mod_crud->getData('result','*','tbl_bookings',null,null,null,null,null,array('id_booking DESC'));
 		$this->render('dash_admin','root/book_order',$data);
+	}
+
+	public function uprove($id = null)
+	{
+		if ($id == null)
+		redirect(base_url('root/book_order'));
+		
+		$update = $this->Mod_crud->updateData('tbl_bookings',array('status_booking' => 'UPROVED'), array('id_booking'=>$id));
+		if ($update) {
+			redirect('root/book_order');
+		}
+	}
+
+	public function detail_order($id = null)
+	{
+		if ($id == null)
+		redirect(base_url('root/book_order'));
+		
+		$data = array(
+			'titleWeb' => 'Detail Order',
+			'titlePage' => 'Detail Order Page'
+		);
+		$data['data'] = $this->Mod_crud->getData('row','*','tbl_bookings',null,null,null,array('id_booking = "'.$id.'"'),null,array('id_booking DESC'));
+		$this->render('dash_admin','root/detail_order',$data);
+	}
+
+	function download($id = null)
+	{
+		if ($id == null)
+		redirect(base_url('root/detail_order'));
+
+		$getFile = $this->Mod_crud->getData('row','*','tbl_bookings',null,null,null,array('id_booking = "'.$id.'"'));
+		$file = $getFile->layout_file_path;
+		force_download($file,NULL);
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1769,4 +1803,185 @@ class Root extends CommonDash {
 		}	
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////////
+	/*Partner dan client */
+	public function list_partner_client()
+	{	
+		
+		$data = array(
+		'titleWeb' 	=> 'Partners & Clients',
+		'titlePage' => 'Partners & Clients',
+		);
+		$data['userlist'] = $this->Mod_crud->getData('result','*','tbl_partner_client');
+		$this->render('dash_admin', 'root/partner_client_list', $data);
+	}
+
+	public function viewPcDataBYID()
+	{
+		$id                = base64_decode($this->input->get('id'));
+		$data['uservalue'] = $this->Mod_crud->getData('row','*','tbl_partner_client',null,null,null,array('id_pc = "'.$id.'"'));
+		echo json_encode($data);
+	}
+
+	public function add_partner_client()
+	{
+		$data = array(
+			'titleWeb' 	=> 'New Partner & Client',
+			'titlePage' => 'New Partner & Client',
+			);
+		$this->render('dash_admin', 'root/partner_client_add', $data);
+	}
+
+	/*user information validation*/
+    public function do_add_pc(){
+        
+		$name_pc  = $this->input->post('name');
+		$date      = date('Y-m-d h:i:sa');
+		$this->load->library('form_validation');
+		$this->form_validation->set_error_delimiters();
+		// Validating Name Field
+		$this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[3]|max_length[60]|xss_clean');
+		
+		if ($this->form_validation->run() == FALSE) {
+			$response['status']  = 'error';
+			$response['message'] = validation_errors();
+			$this->output->set_output(json_encode($response));
+		} else {
+			
+			if ($_FILES['user_image']['name']) {
+				$t = explode(".", $_FILES['user_image']['name']);
+				$ext = end($t);
+				$cfgFile= array(
+						'file_name' 	=> $name_pc.'.'.$ext,
+						'upload_path' 	=> 'assets/img/partner_client/',
+						'allowed_types' => 'jpg|png|jpeg',
+						'max_size'   	=> 1024,
+					);
+
+				$this->load->library('Upload', $cfgFile);
+				$this->upload->initialize($cfgFile);
+				if (!$this->upload->do_upload('user_image')) {
+					$response['status']  = 'error';
+					$response['message'] = $this->upload->display_errors();
+					$this->output->set_output(json_encode($response));
+				}else{
+					$gbr 	= $this->upload->data();
+					$config['image_library'] 	= 'gd2';
+					$config['source_image'] 	= 'assets/img/partner_client/' . $gbr['file_name'];
+					$config['create_thumb'] 	= FALSE;
+					$config['maintain_ratio'] 	= FALSE;
+					$config['quality'] 			= '50%';
+					$config['width']         	= 200;
+					$config['height']       	= 200;
+					$config['new_image']	 	= 'assets/img/partner_client/' . $gbr['file_name'];
+					$this->load->library('image_lib', $config);
+					$this->image_lib->resize();
+				}
+				$img_url = 'assets/img/partner_client/' . $gbr['file_name'];
+			} else {
+				$img_url = '';
+			}
+
+			$success  = $this->Mod_crud->insertData('tbl_partner_client',array(
+				'name_pc' 		=> $name_pc,
+				'image_pc' 		=> $img_url,
+				'created_at' 	=> $date
+				)
+			);
+
+			$response['status']  = 'success';
+			$response['message'] = "Successfully Insert";
+			$this->output->set_output(json_encode($response));
+
+		}
+    }
+
+	/*user information update validation*/
+    public function update_pc(){
+		$id       = $this->input->post('idpc');
+		$name_pc  = $this->input->post('name');
+		$date 	  = date('Y-m-d h:i:sa');
+
+		$this->load->library('form_validation');
+		$this->form_validation->set_error_delimiters();
+
+		$this->form_validation->set_rules('name', 'Name', 'trim|required|min_length[2]|max_length[60]|xss_clean');
+		
+		if ($this->form_validation->run() == FALSE) {
+			$response['status']  = 'error';
+			$response['message'] = validation_errors();
+			$this->output->set_output(json_encode($response));
+		} else {
+			$imag       = $this->Mod_crud->getData('row','*','tbl_partner_client',null,null,null,array('id_pc = "'.$id.'"'));
+			
+			if ($_FILES['user_image']['name']) {
+				$t = explode(".", $_FILES['user_image']['name']);
+				$ext = end($t);
+				$cfgFile= array(
+						'file_name' 	=> $id.'.'.$ext,
+						'upload_path' 	=> 'assets/img/partner_client/',
+						'allowed_types' => 'jpg|png|jpeg',
+						'max_size'   	=> 1024,
+					);
+
+				$this->load->library('Upload', $cfgFile);
+				$this->upload->initialize($cfgFile);
+				if (!$this->upload->do_upload('user_image')) {
+					$response['status']  = 'error';
+					$response['message'] = $this->upload->display_errors();
+					$this->output->set_output(json_encode($response));
+				}else{
+					$gbr 	= $this->upload->data();
+					$config['image_library'] 	= 'gd2';
+					$config['source_image'] 	= 'assets/img/partner_client/' . $gbr['file_name'];
+					$config['create_thumb'] 	= FALSE;
+					$config['maintain_ratio'] 	= FALSE;
+					$config['quality'] 			= '50%';
+					$config['width']         	= 200;
+					$config['height']       	= 200;
+					$config['new_image']	 	= 'assets/img/partner_client/' . $gbr['file_name'];
+					$this->load->library('image_lib', $config);
+					$this->image_lib->resize();
+
+					if (file_exists($imag->image_pc)) {
+						unlink($imag->image_pc);
+					}
+				}
+
+				$img_url = 'assets/img/partner_client/' . $gbr['file_name'];
+			} else {
+				$img_url = $imag->image_pc;
+			}
+
+			$success  = $this->Mod_crud->updateData('tbl_partner_client',array(
+				'name_pc' 	=> $name_pc,
+				'image_pc' 	=> $img_url,
+				'updated_at'=> $date
+			), array('id_pc' => $id));
+
+			$response['status']  = 'success';
+			$response['message'] = "Successfully Updated";
+			$this->output->set_output(json_encode($response)); 
+		}
+	}
+
+	public function delete_pc(){
+		$id = base64_decode($this->input->post('id'));
+		$get_image 	= $this->Mod_crud->getData('row','image_pc','tbl_partner_client',null,null,null,array('id_pc = "'.$id.'"'));
+		$delete_user= $this->Mod_crud->deleteData('tbl_partner_client', array('id_pc' => $id));
+
+		if ($delete_user){
+			if (!empty($get_image)){
+			unlink(FCPATH . $get_image->image_pc);
+			}
+			$data = array(
+					'code' => 200,
+					'pesan' => 'Success Delete !',
+					'aksi' => 'setTimeout("window.location.reload();",1500)'
+              	);
+			echo json_encode($data);
+		}else{
+			echo '';
+		}	
+	}
 }

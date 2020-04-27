@@ -12,77 +12,19 @@
     <div class="container sp-top100">
         <!-- Client -->		
         <div class="client-grid clearfix">
+            <?php 
+            if (!empty($partner_client)) {
+                foreach ($partner_client as $key) { ?>
             <div class="grid-item client-logo col-1 half-height">
                 <div class="table">
                     <div class="item-centered">
-                        <img src="<?=base_url('assets-public/')?>images/clients/1.png" alt="">
+                        <img src="<?=base_url($key->image_pc)?>" alt="">
                     </div>
-                    <i>Joomla</i>
+                    <i><?=$key->name_pc?></i>
                 </div>
-            </div>	
-            
-            <div class="grid-item client-logo col-1 half-height">
-                <div class="table">
-                    <div class="item-centered">
-                        <img src="<?=base_url('assets-public/')?>images/clients/2.png" alt="">
-                    </div>
-                    <i>Envato</i>
-                </div>
-            </div>		
-            
-            <div class="grid-item client-logo col-1 half-height">
-                <div class="table">
-                    <div class="item-centered">
-                        <img src="<?=base_url('assets-public/')?>images/clients/7.png" alt="">
-                    </div>
-                    <i>Piramid</i>
-                </div>
-            </div>
-            
-            <div class="grid-item client-logo col-1 half-height">
-                <div class="table">
-                    <div class="item-centered">
-                        <img src="<?=base_url('assets-public/')?>images/clients/4.png" alt="">
-                    </div>
-                    <i>Magento</i>
-                </div>
-            </div>
-
-            <div class="grid-item client-logo col-1 half-height">
-                <div class="table">
-                    <div class="item-centered">
-                        <img src="<?=base_url('assets-public/')?>images/clients/1.png" alt="">
-                    </div>
-                    <i>Joomla</i>
-                </div>
-            </div>	
-            
-            <div class="grid-item client-logo col-1 half-height">
-                <div class="table">
-                    <div class="item-centered">
-                        <img src="<?=base_url('assets-public/')?>images/clients/2.png" alt="">
-                    </div>
-                    <i>Envato</i>
-                </div>
-            </div>		
-            
-            <div class="grid-item client-logo col-1 half-height">
-                <div class="table">
-                    <div class="item-centered">
-                        <img src="<?=base_url('assets-public/')?>images/clients/7.png" alt="">
-                    </div>
-                    <i>Piramid</i>
-                </div>
-            </div>
-            
-            <div class="grid-item client-logo col-1 half-height">
-                <div class="table">
-                    <div class="item-centered">
-                        <img src="<?=base_url('assets-public/')?>images/clients/4.png" alt="">
-                    </div>
-                    <i>Magento</i>
-                </div>
-            </div>
+            </div>  
+            <?php } }
+            ?>	
 
         </div>	
 

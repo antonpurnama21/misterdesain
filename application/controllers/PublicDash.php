@@ -20,7 +20,7 @@ class PublicDash extends CI_Controller {
 		$data = array_merge($dt, array(
                 'settingsvalue' 	=> $this->Mod_crud->getData('row','*','tbl_settings'),
 				'social'    		=> $this->Mod_crud->getData('result','*','tbl_social_link'),
-				'partner_client'   => $this->Mod_crud->getData('result','*','tbl_partners_and_clients'),
+				'partner_client'   	=> $this->Mod_crud->getData('result','*','tbl_partner_client'),
 				)
 		);
 		

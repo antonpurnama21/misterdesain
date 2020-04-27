@@ -88,6 +88,19 @@
                     </ul>
                 </li>
 
+                <li data-id="partner_client" id="partner_client" class="main">
+                    <a class="has-arrow" href="#" aria-expanded="false">
+                        <i class="icon-people"></i>
+                        <span class="">
+                            Partners & Clients
+                        </span>
+                    </a>
+                    <ul aria-expanded="true" class="">
+                        <li><a href="<?php echo base_url(); ?>root/list_partner_client">List Partners & Clients</a></li>
+                        <li><a href="<?php echo base_url(); ?>root/add_partner_client">Add Partners & Clients</a></li>
+                    </ul>
+                </li>
+
                 <li data-id="social" id="social" class="main">
                     <a class="has-arrow" href="#" aria-expanded="false">
                         <i class="icon-globe"></i>
